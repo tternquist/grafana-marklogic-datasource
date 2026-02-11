@@ -1,0 +1,31 @@
+{
+  "type": "datasource",
+  "name": "MarkLogic",
+  "id": "grafana-marklogic-datasource",
+  "metrics": true,
+  "info": {
+    "description": "MarkLogic data source for meters (Management API) and future logs support",
+    "author": {
+      "name": "Tom Ternquist",
+      "url": ""
+    },
+    "keywords": ["marklogic", "meters", "monitoring"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "MarkLogic Meters API",
+        "url": "https://docs.marklogic.com/REST/management/meters"
+      }
+    ],
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2026-02-11"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.0.0",
+    "plugins": []
+  }
+}
