@@ -1,11 +1,20 @@
 import React from 'react';
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import {
+  DataSourcePluginOptionsEditorProps,
+  updateDatasourcePluginOption,
+  updateDatasourcePluginJsonDataOption,
+  updateDatasourcePluginSecureJsonDataOption,
+  updateDatasourcePluginResetOption,
+} from '@grafana/data';
 import { InlineFormLabel, Input, SecretInput } from '@grafana/ui';
 import type { MarkLogicDataSourceOptions, MarkLogicSecureJsonData } from './types';
 
 export function ConfigEditor(props: DataSourcePluginOptionsEditorProps<MarkLogicDataSourceOptions, MarkLogicSecureJsonData>) {
   const { options, onOptionsChange } = props;
-  const { jsonData, secureJsonData, secureJsonFields } = options;
+  const jsonData = options.jsonData ?? {};
+  const secureJsonData = options.secureJsonData ?? {};
+  const secureJsonFields = options.secureJsonFields ?? {};
+  const url = options.url ?? jsonData.url ?? '';
 
   return (
     <div className="gf-form-group">
@@ -15,14 +24,9 @@ export function ConfigEditor(props: DataSourcePluginOptionsEditorProps<MarkLogic
         <Input
           width={24}
           type="text"
-          value={jsonData.url || ''}
+          value={url}
           placeholder="http://localhost:8002"
-          onChange={(e) =>
-            onOptionsChange({
-              ...options,
-              jsonData: { ...jsonData, url: e.currentTarget.value || undefined },
-            })
-          }
+          onChange={(e) => updateDatasourcePluginOption(props, 'url', e.currentTarget.value)}
         />
       </div>
       <div className="gf-form">
@@ -30,14 +34,9 @@ export function ConfigEditor(props: DataSourcePluginOptionsEditorProps<MarkLogic
         <Input
           width={24}
           type="text"
-          value={jsonData.serverId || 'Admin'}
+          value={jsonData.serverId ?? 'Admin'}
           placeholder="Admin"
-          onChange={(e) =>
-            onOptionsChange({
-              ...options,
-              jsonData: { ...jsonData, serverId: e.currentTarget.value || undefined },
-            })
-          }
+          onChange={(e) => updateDatasourcePluginJsonDataOption(props, 'serverId', e.currentTarget.value)}
         />
       </div>
       <div className="gf-form">
@@ -45,12 +44,7 @@ export function ConfigEditor(props: DataSourcePluginOptionsEditorProps<MarkLogic
         <input
           type="checkbox"
           checked={jsonData.tlsSkipVerify ?? false}
-          onChange={(e) =>
-            onOptionsChange({
-              ...options,
-              jsonData: { ...jsonData, tlsSkipVerify: e.target.checked },
-            })
-          }
+          onChange={(e) => updateDatasourcePluginJsonDataOption(props, 'tlsSkipVerify', e.target.checked)}
         />
       </div>
 
@@ -60,14 +54,9 @@ export function ConfigEditor(props: DataSourcePluginOptionsEditorProps<MarkLogic
         <Input
           width={24}
           type="text"
-          value={secureJsonData?.username || ''}
+          value={secureJsonData.username ?? ''}
           placeholder="admin"
-          onChange={(e) =>
-            onOptionsChange({
-              ...options,
-              secureJsonData: { ...secureJsonData, username: e.currentTarget.value || undefined },
-            })
-          }
+          onChange={(e) => updateDatasourcePluginSecureJsonDataOption(props, 'username', e.currentTarget.value)}
         />
       </div>
       <div className="gf-form">
@@ -75,21 +64,16 @@ export function ConfigEditor(props: DataSourcePluginOptionsEditorProps<MarkLogic
         <SecretInput
           width={24}
           placeholder="Password"
-          isConfigured={!!secureJsonFields?.password}
-          onReset={() =>
-            onOptionsChange({
-              ...options,
-              secureJsonFields: { ...secureJsonFields, password: false },
-              secureJsonData: { ...secureJsonData, password: undefined },
-            })
-          }
-          onChange={(e) =>
-            onOptionsChange({
-              ...options,
-              secureJsonData: { ...secureJsonData, password: e.currentTarget.value || undefined },
-              secureJsonFields: { ...secureJsonFields, password: !!e.currentTarget.value },
-            })
-          }
+          isConfigured={!!secureJsonFields.password}
+          onReset={() => updateDatasourcePluginResetOption(props, 'password')}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            props.onOptionsChange({
+              ...props.options,
+              secureJsonData: { ...secureJsonData, password: value || undefined },
+              secureJsonFields: { ...secureJsonFields, password: !!value },
+            });
+          }}
         />
       </div>
     </div>
