@@ -19,7 +19,8 @@ export class DataSource extends DataSourceApi<MarkLogicQuery, MarkLogicDataSourc
   constructor(instanceSettings: DataSourceInstanceSettings<MarkLogicDataSourceOptions>) {
     super(instanceSettings);
     this.instanceSettings = instanceSettings;
-    this.url = instanceSettings.jsonData.url?.replace(/\/$/, '') || '';
+    const baseUrl = instanceSettings.url || instanceSettings.jsonData?.url || '';
+    this.url = baseUrl.replace(/\/$/, '') || '';
     this.serverId = instanceSettings.jsonData.serverId || 'Admin';
     this.tlsSkipVerify = instanceSettings.jsonData.tlsSkipVerify ?? false;
   }
